@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成功裝B男 成績分析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f1e8; --paper:#fffdf9; --paper-2:#fbf4e8;
+    --ink:#2b2620; --ink-2:#6b6255; --ink-muted:#9a8f7d;
+    --line:#e7dcc8;
+    --coral:#d8623b; --coral-bg:#fbe6dc; --coral-text:#a13f21;
+    --teal:#1f8a70; --teal-bg:#dff2ec; --teal-text:#0f5c48;
+    --amber:#c8862a; --amber-bg:#f8ecd6; --amber-text:#7d5313;
+    --plum:#7a5980; --plum-bg:#efe4f0; --plum-text:#553a5c;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Noto Sans TC",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+    line-height:1.7; padding:0 0 4rem;
+  }
+  .wrap{max-width:960px; margin:0 auto; padding:0 22px;}
+  header{padding:3rem 0 1.6rem; position:relative;}
+  header::after{content:""; display:block; width:56px; height:5px; background:var(--coral); border-radius:99px; margin-top:14px;}
+  h1{font-family:"Noto Serif TC",serif; font-size:32px; font-weight:700; margin:0; letter-spacing:.5px;}
+  .sub{color:var(--ink-2); font-size:15px; margin:10px 0 0;}
+  h2{font-family:"Noto Serif TC",serif; font-size:21px; font-weight:700; margin:0 0 4px;}
+  h3{font-family:"Noto Serif TC",serif; font-size:19px; font-weight:700; margin:0 0 6px; display:flex; align-items:center; gap:9px;}
+  h3 .dot{width:9px; height:9px; border-radius:50%; background:var(--coral); flex:none;}
+  .section{margin-top:2rem;}
+  .card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:1.2rem 1.5rem; box-shadow:0 1px 0 rgba(43,38,32,.03);}
+  .card.tinted{background:var(--paper-2);}
+  .grid{display:grid; gap:12px;}
+  .kpi-grid{display:flex; flex-wrap:wrap; gap:8px; margin-top:1rem;}
+  .kpi{background:var(--paper-2); border-left:3px solid var(--coral); border-radius:8px; padding:10px 8px; flex:1 1 0; min-width:0;}
+  .kpi.teal{border-left-color:var(--teal);}
+  .kpi.amber{border-left-color:var(--amber);}
+  .kpi.plum{border-left-color:var(--plum);}
+  .kpi .label{font-size:11px; color:var(--ink-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .kpi .value{font-family:"Noto Serif TC",serif; font-size:19px; font-weight:700; margin-top:2px; line-height:1.25;}
+  .kpi .note{font-size:13px; color:var(--ink-2); margin-top:2px;}
+  .pos{color:var(--teal);} .neg{color:#dc2626;}
+  .insight{font-size:15px; line-height:1.6; color:var(--ink-2); margin-top:.6rem;}
+  .insight b{color:var(--ink); font-weight:700;}
+  .callout{background:var(--amber-bg); border:1px solid #eddcae; border-radius:10px; padding:12px 16px; font-size:14px; color:var(--amber-text); margin-top:12px;}
+  .callout b{color:var(--amber-text);}
+  .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .subj-btn{
+    background:var(--paper-2); border:1px solid var(--line); color:var(--ink-2);
+    border-radius:99px; padding:7px 16px; font-size:13.5px; font-weight:500;
+    cursor:pointer; transition:background .12s, color .12s, border-color .12s;
+  }
+  .subj-btn:hover{background:#fff; border-color:var(--ink-muted);}
+  .subj-btn.active{background:var(--coral-bg); border-color:var(--coral); color:var(--coral-text); font-weight:700;}
+  .page-tabbar{display:flex; flex-wrap:wrap; row-gap:6px; column-gap:4px; margin-bottom:0; padding:0 2px;}
+  .page-tab{
+    flex:none; cursor:pointer; position:relative; top:1px;
+    padding:11px 18px; font-size:14px; font-weight:500; color:var(--ink-muted);
+    background:var(--paper-2); border:1px solid var(--line); border-bottom:none;
+    border-radius:10px 10px 0 0; white-space:nowrap;
+    transition:background .12s, color .12s, border-color .12s;
+  }
+  .page-tab:hover{color:var(--ink);}
+  .page-tab.active{background:var(--paper); color:var(--ink); font-weight:700; border-color:var(--coral); border-width:2px; padding:10px 17px;}
+  .page{margin-top:0 !important; border-top-left-radius:0; border-top-right-radius:0;}
+  .chart-box{position:relative; width:100%;}
+  .tag{display:inline-block; font-size:12px; padding:2px 9px; border-radius:99px; font-weight:700;}
+  .tag.pos{background:var(--teal-bg); color:var(--teal-text);}
+  .tag.neg{background:var(--coral-bg); color:var(--coral-text);}
+  .tag.amber{background:var(--amber-bg); color:var(--amber-text);}
+  .tag.alert{background:#dc2626; color:#ffffff;}
+  .rank-list{list-style:none; margin:0; padding:0;}
+  .rank-item{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:14px;}
+  .rank-item:last-child{border-bottom:none;}
+  .rank-item .who{color:var(--ink); font-weight:500;}
+  .rank-item .when{color:var(--ink-muted); font-size:12.5px; margin-left:6px;}
+  .rank-list-title{font-size:13px; color:var(--ink-muted); margin:0 0 6px; font-weight:700;}
+  table{width:100%; border-collapse:collapse; font-size:13.5px; margin-top:.5rem;}
+  th,td{text-align:left; padding:8px; border-bottom:1px solid var(--line);}
+  th{color:var(--ink-muted); font-weight:700; font-size:12.5px;}
+  td.num{text-align:right; font-variant-numeric:tabular-nums;}
+  footer{margin-top:3rem; font-size:12px; color:var(--ink-muted); text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>成功裝B男 成績分析</h1>
+    <p class="sub">上下學期六次段考 · 十科成績與年平均比較</p>
+  </header>
+
+  <nav class="page-tabbar" id="pageNav" style="margin-top:.5rem;"></nav>
+
+  <section class="section card page" id="page-data">
+    <h3><span class="dot"></span>完整數據表</h3>
+    <div class="row" id="dataTabs" style="gap:8px; margin-bottom:10px;"></div>
+    <table id="dataTable">
+      <thead><tr><th>科目</th><th class="num">分數</th><th class="num">年平均</th><th class="num">差距</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section class="section card page" id="page-overview">
+    <h3><span class="dot"></span>各科與年平均差距</h3>
+    <p class="insight" style="margin-top:0;">淡黃色的底色塊，整片覆蓋在每個科目底下，代表六次段考的平均差距；上面幾根短條，是每一次段考各自的差距——<span style="color:#dc2626; font-weight:700;">鮮紅色</span>代表那次沒有贏過年平均，<span style="color:var(--amber); font-weight:700;">橘色</span>代表小幅領先（不到 5 分），<span style="color:var(--teal); font-weight:700;">綠色</span>代表領先幅度較大。</p>
+    <div class="chart-box" style="height:340px;">
+      <canvas id="overviewChart" role="img" aria-label="長條圖：各科與年平均差距，淡色長條為六次段考平均，深色長條為每次段考個別的差距"></canvas>
+    </div>
+  </section>
+
+  <section class="section card page" id="page-radar">
+    <h3><span class="dot"></span>十科強弱分布</h3>
+    <p class="insight" style="margin-top:0;">珊瑚色是成功裝B男的分數，灰色虛線是年平均，兩圈之間的距離就是領先幅度。可以切換看六次平均，或單一次段考的表現。</p>
+    <div class="row" id="examTabs" style="gap:8px; margin-top:10px;"></div>
+    <div class="chart-box" style="height:380px; margin-top:6px;">
+      <canvas id="radarChart" role="img" aria-label="雷達圖：十科成績與年平均的分布比較，可切換六次平均或單次段考"></canvas>
+    </div>
+  </section>
+
+  <section class="section card page" id="page-trend">
+    <h3><span class="dot"></span>科目成績曲線 vs 年平均曲線</h3>
+    <p class="insight" style="margin-top:0;">點選下方任一科目，就會看到那一科六次段考的成績曲線，跟年平均曲線對照。</p>
+    <div class="row" id="subjTabs" style="gap:8px;"></div>
+    <div class="chart-box" style="height:280px; margin-top:14px;">
+      <canvas id="trendChart" role="img" aria-label="折線圖：所選科目在上下學期六次段考的成績與年平均走勢"></canvas>
+    </div>
+    <div class="grid kpi-grid" id="subjKpi" style="margin-top:14px;"></div>
+  </section>
+
+  <section class="section card page" id="page-socsci">
+    <h3><span class="dot"></span>社會 vs 自然 整體走勢</h3>
+    <p class="insight" style="margin-top:0;">國文、英文、數學是文理組共同科目，不特別分類；這裡比較的是「社會（史地公）」與「自然（理化生地科）」兩邊真正分流的科目，另外也把共同科目（國英數）單獨畫一條線給你參考。</p>
+    <p class="insight" style="margin-top:0;" id="litSciInsight"></p>
+    <div class="chart-box" style="height:300px;">
+      <canvas id="litSciChart" role="img" aria-label="折線圖：社會三科平均、自然四科平均、共同科目三科平均，在六次段考的走勢比較，並對照年平均"></canvas>
+    </div>
+  </section>
+
+  <section class="section card page" id="page-difficulty">
+    <h3><span class="dot"></span>各次段考的難易度（成功裝B男自己 vs 全年級）</h3>
+    <p class="insight" style="margin-top:0;">把成功裝B男有考的科目在同一次段考的分數平均起來，和該次段考的年平均相比，可以看出哪一次考試對大家（包含成功裝B男）都比較難。</p>
+    <div class="chart-box" style="height:260px;">
+      <canvas id="examChart" role="img" aria-label="折線圖：每次段考成功裝B男自己各科平均分數與全年級平均分數的走勢"></canvas>
+    </div>
+  </section>
+
+  <section class="section card page" id="page-records">
+    <h3><span class="dot"></span>單次戰績排行榜</h3>
+    <p class="insight" style="margin-top:0;">把四十多次段考成績攤開來看，領先年平均最多的高光時刻，跟落後最多的待加強時刻。</p>
+    <div class="grid" style="grid-template-columns:1fr 1fr; gap:16px;" id="recordLists"></div>
+  </section>
+
+  <section class="section card page" id="page-corr">
+    <h3><span class="dot"></span>科目連動性</h3>
+    <p class="insight" style="margin-top:0;">兩科分數是不是常常一起漲一起跌？這裡只用共同考過至少 3 次的科目配對來看，樣本數不多，僅供參考方向，不是精確結論。</p>
+    <div class="grid" style="grid-template-columns:1fr 1fr; gap:16px;" id="corrLists"></div>
+  </section>
+
+  <footer>資料來源：森成績.xlsx　·　本頁可離線儲存後雙擊開啟（需連網載入圖表套件與字體）</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const data = {"國文":[{"exam":"上學期一段","score":74,"avg":66.3},{"exam":"上學期二段","score":71,"avg":63.9},{"exam":"上學期三段","score":75,"avg":69.8},{"exam":"下學期一段","score":67,"avg":61.0},{"exam":"下學期二段","score":67,"avg":65.5},{"exam":"下學期三段","score":81,"avg":65.0}],"英文":[{"exam":"上學期一段","score":74,"avg":60.6},{"exam":"上學期二段","score":70,"avg":53.7},{"exam":"上學期三段","score":69,"avg":65.7},{"exam":"下學期一段","score":81,"avg":64.5},{"exam":"下學期二段","score":81,"avg":70.9},{"exam":"下學期三段","score":59,"avg":46.1}],"數學":[{"exam":"上學期一段","score":84,"avg":47.8},{"exam":"上學期二段","score":65,"avg":50.3},{"exam":"上學期三段","score":92,"avg":61.8},{"exam":"下學期一段","score":90,"avg":64.9},{"exam":"下學期二段","score":69,"avg":47.1},{"exam":"下學期三段","score":70,"avg":57.2}],"歷史":[{"exam":"上學期一段","score":80,"avg":77.7},{"exam":"上學期二段","score":72,"avg":69.2},{"exam":"上學期三段","score":74,"avg":72.8},{"exam":"下學期一段","score":78,"avg":71.5},{"exam":"下學期二段","score":82,"avg":71.0},{"exam":"下學期三段","score":74,"avg":71.7}],"地理":[{"exam":"上學期一段","score":92,"avg":73.1},{"exam":"上學期二段","score":88,"avg":74.1},{"exam":"上學期三段","score":76,"avg":69.2},{"exam":"下學期一段","score":81,"avg":76.4},{"exam":"下學期二段","score":74,"avg":71.4},{"exam":"下學期三段","score":76,"avg":76.9}],"公民":[{"exam":"下學期一段","score":86,"avg":70.8},{"exam":"下學期二段","score":71,"avg":60.0},{"exam":"下學期三段","score":81,"avg":72.0}],"化學":[{"exam":"上學期一段","score":92,"avg":76.7},{"exam":"上學期二段","score":72,"avg":61.0},{"exam":"上學期三段","score":67,"avg":61.4}],"生物":[{"exam":"上學期二段","score":75,"avg":59.7},{"exam":"上學期三段","score":83,"avg":78.2}],"物理":[{"exam":"下學期一段","score":81,"avg":74.4},{"exam":"下學期二段","score":65,"avg":70.0},{"exam":"下學期三段","score":88,"avg":66.2}],"地科":[{"exam":"下學期一段","score":76,"avg":67.9},{"exam":"下學期二段","score":57,"avg":58.2},{"exam":"下學期三段","score":68,"avg":63.8}]};
+
+const allExams = ["上學期一段","上學期二段","上學期三段","下學期一段","下學期二段","下學期三段"];
+const subjects = Object.keys(data);
+
+function mean(a){return a.reduce((x,y)=>x+y,0)/a.length;}
+function pstdev(a){const m=mean(a); return Math.sqrt(mean(a.map(x=>(x-m)**2)));}
+function round1(n){return Math.round(n*10)/10;}
+function residStd(scores){
+  const n = scores.length;
+  if(n < 3) return null;
+  const x = scores.map((_,i)=>i);
+  const xm = mean(x), ym = mean(scores);
+  const num = x.reduce((s,xi,i)=>s+(xi-xm)*(scores[i]-ym),0);
+  const den = x.reduce((s,xi)=>s+(xi-xm)**2,0);
+  const b = den? num/den : 0;
+  const a = ym - b*xm;
+  const resid = x.map((xi,i)=>scores[i]-(a+b*xi));
+  return pstdev(resid);
+}
+
+const cCoral = '#d8623b', cTeal = '#1f8a70', cAmber = '#c8862a', cPlum = '#7a5980', cMuted = '#8a8070', cGrid = '#e7dcc8';
+Chart.defaults.font.family = "'Noto Sans TC',sans-serif";
+Chart.defaults.color = cMuted;
+
+// ---- per-subject summary ----
+const summary = {};
+subjects.forEach(s=>{
+  const rows = data[s];
+  const scores = rows.map(r=>r.score);
+  const diffs = rows.map(r=>r.score-r.avg);
+  const s1 = rows.filter(r=>r.exam.startsWith('上學期')).map(r=>r.score);
+  const s2 = rows.filter(r=>r.exam.startsWith('下學期')).map(r=>r.score);
+  summary[s] = {
+    meanScore: round1(mean(scores)),
+    stdScore: round1(pstdev(scores)),
+    residStdScore: (residStd(scores)!==null)? round1(residStd(scores)) : null,
+    meanDiff: round1(mean(diffs)),
+    s1avg: s1.length? round1(mean(s1)) : null,
+    s2avg: s2.length? round1(mean(s2)) : null,
+    change: (s1.length&&s2.length)? round1(mean(s2)-mean(s1)) : null,
+    maxScore: Math.max(...scores), minScore: Math.min(...scores),
+    n: rows.length
+  };
+});
+
+// ---- KPI row ----
+// exam-level difficulty (used later by the exam-difficulty chart)
+const examSelfAvg = {}, examYearAvg = {};
+allExams.forEach(e=>{
+  const scores = [], avgs = [];
+  subjects.forEach(s=>{ const r = data[s].find(x=>x.exam===e); if(r){scores.push(r.score); avgs.push(r.avg);} });
+  if(scores.length){ examSelfAvg[e]=round1(mean(scores)); examYearAvg[e]=round1(mean(avgs)); }
+});
+
+// ---- overview chart: light-yellow average block behind dark per-exam bars ----
+const overviewLabels = subjects.slice().sort((a,b)=>summary[b].meanDiff-summary[a].meanDiff);
+const maxExamCount = 6;
+const overviewAvgValues = overviewLabels.map(s=>summary[s].meanDiff);
+const examValuesByCategory = overviewLabels.map(s=>data[s].map(r=>round1(r.score-r.avg)));
+const overviewDatasets = [];
+for(let i=0;i<maxExamCount;i++){
+  overviewDatasets.push({
+    label: '第'+(i+1)+'次段考',
+    data: overviewLabels.map(s=>{ const r = data[s][i]; return r? round1(r.score-r.avg) : null; }),
+    backgroundColor: 'rgba(0,0,0,0)',
+    borderWidth: 0,
+    categoryPercentage: 0.82,
+    barPercentage: 0.85
+  });
+}
+const avgBlockColor = '#f3d675';
+function drawBar(ctx, x, y, w, h, roundTop){
+  const r = Math.min(4, w/2, h);
+  ctx.beginPath();
+  if(ctx.roundRect){ ctx.roundRect(x, y, w, h, roundTop? [r,r,0,0] : [0,0,r,r]); }
+  else { ctx.rect(x, y, w, h); }
+  ctx.fill();
+}
+const avgBackgroundPlugin = {
+  id: 'avgBackground',
+  beforeDatasetsDraw(chart, args, opts){
+    const {ctx, scales} = chart;
+    const xScale = scales.x, yScale = scales.y;
+    const labels = chart.data.labels;
+    const categoryWidth = (xScale.right - xScale.left) / labels.length;
+    const clusterWidth = categoryWidth * opts.categoryPercentage;
+    const zeroY = yScale.getPixelForValue(0);
+    ctx.save();
+    labels.forEach((lab,i)=>{
+      const centerX = xScale.getPixelForValue(i);
+      const left = centerX - clusterWidth/2;
+      const avgV = opts.avgValues[i];
+      if(avgV!=null){
+        const valY = yScale.getPixelForValue(avgV);
+        const top = Math.min(zeroY, valY);
+        const height = Math.max(1, Math.abs(zeroY - valY));
+        ctx.fillStyle = opts.avgColor;
+        drawBar(ctx, left, top, clusterWidth, height, avgV>=0);
+      }
+      const exams = opts.examValues[i] || [];
+      const slotW = clusterWidth / opts.maxCount;
+      exams.forEach((v,j)=>{
+        if(v==null) return;
+        const barW = slotW*0.6;
+        const cx = left + j*slotW + slotW/2;
+        const valY = yScale.getPixelForValue(v);
+        const top = Math.min(zeroY, valY);
+        const height = Math.max(1.5, Math.abs(zeroY - valY));
+        ctx.fillStyle = v<0 ? opts.alertColor : (v<5 ? opts.smallGainColor : opts.examColor);
+        drawBar(ctx, cx-barW/2, top, barW, height, v>=0);
+      });
+    });
+    ctx.restore();
+  }
+};
+new Chart(document.getElementById('overviewChart'), {
+  type:'bar',
+  data:{ labels:overviewLabels, datasets:overviewDatasets },
+  plugins:[avgBackgroundPlugin],
+  options:{ responsive:true, maintainAspectRatio:false, onHover:(e,els)=>{ e.native.target.style.cursor = els.length?'pointer':'default'; },
+    onClick:(e,els)=>{ if(els.length){ selectSubject(overviewLabels[els[0].index]); document.querySelector('#subjTabs').scrollIntoView({behavior:'smooth', block:'center'}); } },
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:(c)=> c.dataset.label+'：'+(c.parsed.y>=0?'+':'')+c.parsed.y+' 分'}},
+      avgBackground:{ avgValues: overviewAvgValues, examValues: examValuesByCategory, avgColor: avgBlockColor, examColor: cTeal, alertColor: '#dc2626', smallGainColor: cAmber, categoryPercentage: 0.82, maxCount: maxExamCount }
+    },
+    scales:{ x:{grid:{display:false}, ticks:{color:cMuted}}, y:{grid:{color:cGrid}, ticks:{color:cMuted, callback:v=>(v>=0?'+':'')+v}, title:{display:true,text:'與年平均差距 (分)',color:cMuted}} }
+  }
+});
+
+// ---- radar chart: switchable between 6-exam average and a single exam ----
+const examOptions = ['六次平均', ...allExams];
+function radarDataFor(option){
+  if(option==='六次平均'){
+    return {
+      score: subjects.map(s=>summary[s].meanScore),
+      avg: subjects.map(s=>round1(mean(data[s].map(r=>r.avg))))
+    };
+  }
+  return {
+    score: subjects.map(s=>{ const r = data[s].find(x=>x.exam===option); return r? r.score : null; }),
+    avg: subjects.map(s=>{ const r = data[s].find(x=>x.exam===option); return r? r.avg : null; })
+  };
+}
+const radarChart = new Chart(document.getElementById('radarChart'), {
+  type:'radar',
+  data:{ labels:subjects, datasets:[
+    {label:'成功裝B男平均分', data:[], borderColor:cCoral, backgroundColor:cCoral+'33', borderWidth:2, pointRadius:3, pointBackgroundColor:cCoral, spanGaps:true},
+    {label:'年平均', data:[], borderColor:cMuted, backgroundColor:cMuted+'22', borderWidth:2, borderDash:[5,4], pointRadius:3, pointBackgroundColor:cMuted, spanGaps:true}
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:true, position:'top', labels:{color:cMuted, boxWidth:10, font:{size:12}}} },
+    scales:{ r:{ min:0, max:100, grid:{color:cGrid}, angleLines:{color:cGrid}, pointLabels:{color:'#5a5245', font:{size:12}}, ticks:{color:cMuted, backdropColor:'transparent', stepSize:20} } }
+  }
+});
+function renderRadar(option){
+  const d = radarDataFor(option);
+  radarChart.data.datasets[0].label = option==='六次平均' ? '成功裝B男平均分' : '成功裝B男 '+option+' 分數';
+  radarChart.data.datasets[1].label = option==='六次平均' ? '年平均' : option+' 年平均';
+  radarChart.data.datasets[0].data = d.score;
+  radarChart.data.datasets[1].data = d.avg;
+  radarChart.update('none');
+}
+const examTabs = document.getElementById('examTabs');
+examOptions.forEach(opt=>{
+  const btn = document.createElement('button');
+  btn.className = 'subj-btn';
+  btn.textContent = opt;
+  btn.dataset.opt = opt;
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#examTabs .subj-btn').forEach(b=>b.classList.toggle('active', b.dataset.opt===opt));
+    renderRadar(opt);
+  });
+  examTabs.appendChild(btn);
+});
+document.querySelector('#examTabs .subj-btn').classList.add('active');
+renderRadar('六次平均');
+
+// ---- subject tabs ----
+const subjTabs = document.getElementById('subjTabs');
+subjects.forEach(s=>{
+  const btn = document.createElement('button');
+  btn.className = 'subj-btn';
+  btn.textContent = s;
+  btn.dataset.subj = s;
+  btn.addEventListener('click', ()=>selectSubject(s));
+  subjTabs.appendChild(btn);
+});
+let trendChart;
+function selectSubject(s){
+  document.querySelectorAll('.subj-btn').forEach(b=>b.classList.toggle('active', b.dataset.subj===s));
+  renderSubject(s);
+}
+function renderSubject(s){
+  const rows = data[s];
+  const present = rows.map(r=>r.exam);
+  const labels = allExams.filter(e=>present.includes(e));
+  const map = {}; rows.forEach(r=>map[r.exam]=r);
+  const scores = labels.map(e=>map[e].score);
+  const avgs = labels.map(e=>map[e].avg);
+  if(trendChart) trendChart.destroy();
+  trendChart = new Chart(document.getElementById('trendChart'), {
+    type:'line',
+    data:{ labels, datasets:[
+      {label:s+'成績', data:scores, borderColor:cCoral, backgroundColor:cCoral, pointRadius:4, borderWidth:2, tension:.2},
+      {label:'年平均', data:avgs, borderColor:cMuted, backgroundColor:cMuted, borderDash:[5,4], pointRadius:3, borderWidth:2, tension:.2}
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:true, position:'top', labels:{color:cMuted, boxWidth:10, font:{size:12}}} },
+      scales:{ x:{grid:{display:false}, ticks:{color:cMuted}}, y:{grid:{color:cGrid}, ticks:{color:cMuted}} }
+    }
+  });
+  const sm = summary[s];
+  document.getElementById('subjKpi').innerHTML = `
+    <div class="kpi"><div class="label">平均成績</div><div class="value">${sm.meanScore}</div></div>
+    <div class="kpi"><div class="label">平均超前年平均</div><div class="value ${sm.meanDiff>=0?'pos':'neg'}">${sm.meanDiff>=0?'+':''}${sm.meanDiff}</div></div>
+    <div class="kpi"><div class="label">最高 / 最低分</div><div class="value">${sm.maxScore} / ${sm.minScore}</div></div>
+    <div class="kpi"><div class="label">學期變化</div><div class="value ${sm.change===null?'':(sm.change>=0?'pos':'neg')}">${sm.change===null?'僅單學期':(sm.change>=0?'+':'')+sm.change}</div></div>
+  `;
+}
+selectSubject(overviewLabels[0]);
+
+// ---- 社會 vs 自然 vs 共同科目 overall trend ----
+const socialSubjects = ['歷史','地理','公民'].filter(s=>subjects.includes(s));
+const scienceSubjects = ['物理','化學','生物','地科'].filter(s=>subjects.includes(s));
+const commonSubjects = ['國文','英文','數學'].filter(s=>subjects.includes(s));
+function groupAvgByExam(group){
+  const scoreLine = [], avgLine = [];
+  allExams.forEach(e=>{
+    const scores=[], avgs=[];
+    group.forEach(s=>{ const r=data[s].find(x=>x.exam===e); if(r){scores.push(r.score); avgs.push(r.avg);} });
+    scoreLine.push(scores.length? round1(mean(scores)) : null);
+    avgLine.push(avgs.length? round1(mean(avgs)) : null);
+  });
+  return {scoreLine, avgLine};
+}
+const socialData = groupAvgByExam(socialSubjects);
+const scienceData = groupAvgByExam(scienceSubjects);
+const commonData = groupAvgByExam(commonSubjects);
+new Chart(document.getElementById('litSciChart'), {
+  type:'line',
+  data:{ labels:allExams, datasets:[
+    {label:'社會平均（史地公）', data:socialData.scoreLine, borderColor:cPlum, backgroundColor:cPlum, borderWidth:2, pointRadius:4, tension:.2, spanGaps:true},
+    {label:'社會年平均', data:socialData.avgLine, borderColor:cPlum, backgroundColor:cPlum, borderWidth:1.5, borderDash:[5,4], pointRadius:2, tension:.2, spanGaps:true},
+    {label:'自然平均（理化生地科）', data:scienceData.scoreLine, borderColor:cTeal, backgroundColor:cTeal, borderWidth:2, pointRadius:4, tension:.2, spanGaps:true},
+    {label:'自然年平均', data:scienceData.avgLine, borderColor:cTeal, backgroundColor:cTeal, borderWidth:1.5, borderDash:[5,4], pointRadius:2, tension:.2, spanGaps:true},
+    {label:'共同科目平均（國英數）', data:commonData.scoreLine, borderColor:cAmber, backgroundColor:cAmber, borderWidth:2, pointRadius:4, tension:.2, spanGaps:true},
+    {label:'共同科目年平均', data:commonData.avgLine, borderColor:cAmber, backgroundColor:cAmber, borderWidth:1.5, borderDash:[5,4], pointRadius:2, tension:.2, spanGaps:true}
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:true, position:'top', labels:{color:cMuted, boxWidth:10, font:{size:11}}} },
+    scales:{ x:{grid:{display:false}, ticks:{color:cMuted}}, y:{grid:{color:cGrid}, ticks:{color:cMuted}} }
+  }
+});
+const socialMean = round1(mean(socialData.scoreLine.filter(v=>v!==null)));
+const scienceMean = round1(mean(scienceData.scoreLine.filter(v=>v!==null)));
+const commonMean = round1(mean(commonData.scoreLine.filter(v=>v!==null)));
+const socialLead = round1(socialMean - mean(socialData.avgLine.filter(v=>v!==null)));
+const scienceLead = round1(scienceMean - mean(scienceData.avgLine.filter(v=>v!==null)));
+const commonLead = round1(commonMean - mean(commonData.avgLine.filter(v=>v!==null)));
+document.getElementById('litSciInsight').innerHTML = `
+  社會三科平均 <b>${socialMean}</b> 分（領先年平均 ${socialLead>=0?'+':''}${socialLead}），自然四科平均 <b>${scienceMean}</b> 分（領先年平均 ${scienceLead>=0?'+':''}${scienceLead}），
+  共同科目（國英數）平均 <b>${commonMean}</b> 分（領先年平均 ${commonLead>=0?'+':''}${commonLead}）。
+  ${scienceLead>socialLead ? '自然科目整體領先幅度比社會更大，理化生是成功裝B男相對更突出的一邊。' : '社會科目整體領先幅度比自然更大，史地公是成功裝B男相對更突出的一邊。'}
+`;
+
+// ---- exam difficulty chart ----
+new Chart(document.getElementById('examChart'), {
+  type:'line',
+  data:{ labels:allExams.filter(e=>examSelfAvg[e]!==undefined), datasets:[
+    {label:'成功裝B男各科平均', data:allExams.map(e=>examSelfAvg[e]), borderColor:cAmber, backgroundColor:cAmber, pointRadius:4, borderWidth:2, tension:.2},
+    {label:'全年級年平均', data:allExams.map(e=>examYearAvg[e]), borderColor:cMuted, backgroundColor:cMuted, borderDash:[5,4], pointRadius:3, borderWidth:2, tension:.2}
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:true, position:'top', labels:{color:cMuted, boxWidth:10, font:{size:12}}} },
+    scales:{ x:{grid:{display:false}, ticks:{color:cMuted}}, y:{grid:{color:cGrid}, ticks:{color:cMuted}} }
+  }
+});
+
+// ---- 單次戰績排行榜 ----
+const allRecords = [];
+subjects.forEach(s=>{ data[s].forEach(r=>{ allRecords.push({s, exam:r.exam, score:r.score, avg:r.avg, diff:round1(r.score-r.avg)}); }); });
+const topRecords = allRecords.slice().sort((a,b)=>b.diff-a.diff).slice(0,5);
+const bottomRecords = allRecords.slice().sort((a,b)=>a.diff-b.diff).slice(0,5);
+function recordListHTML(title, list){
+  const items = list.map(r=>`
+    <li class="rank-item">
+      <span><span class="who">${r.s}</span><span class="when">${r.exam}</span></span>
+      <span class="tag ${r.diff<0?'alert':'pos'}">${r.diff>=0?'+':''}${r.diff}</span>
+    </li>`).join('');
+  return `<div><p class="rank-list-title">${title}</p><ul class="rank-list">${items}</ul></div>`;
+}
+document.getElementById('recordLists').innerHTML =
+  recordListHTML('高光時刻 Top 5', topRecords) +
+  recordListHTML('待加強 Bottom 5', bottomRecords);
+
+// ---- 科目連動性 ----
+function pearson(a,b){
+  const n=a.length; if(n<2) return null;
+  const ma=mean(a), mb=mean(b);
+  const num=a.reduce((s,ai,i)=>s+(ai-ma)*(b[i]-mb),0);
+  const da=a.reduce((s,ai)=>s+(ai-ma)**2,0);
+  const db=b.reduce((s,bi)=>s+(bi-mb)**2,0);
+  if(da===0||db===0) return null;
+  return num/Math.sqrt(da*db);
+}
+const pairResults = [];
+for(let i=0;i<subjects.length;i++){
+  for(let j=i+1;j<subjects.length;j++){
+    const s1=subjects[i], s2=subjects[j];
+    const map1={}; data[s1].forEach(r=>map1[r.exam]=r.score);
+    const map2={}; data[s2].forEach(r=>map2[r.exam]=r.score);
+    const common = allExams.filter(e=>map1[e]!==undefined && map2[e]!==undefined);
+    if(common.length>=3){
+      const a=common.map(e=>map1[e]), b=common.map(e=>map2[e]);
+      const c = pearson(a,b);
+      if(c!==null) pairResults.push({s1,s2,c:round1(c),n:common.length});
+    }
+  }
+}
+pairResults.sort((a,b)=>b.c-a.c);
+const topPairs = pairResults.slice(0,3);
+const bottomPairs = pairResults.slice(-3).reverse();
+function pairListHTML(title, list){
+  if(!list.length) return `<div><p class="rank-list-title">${title}</p><p class="insight" style="margin-top:0;">資料不足，暫無配對。</p></div>`;
+  const items = list.map(p=>`
+    <li class="rank-item">
+      <span><span class="who">${p.s1} × ${p.s2}</span><span class="when">共${p.n}次</span></span>
+      <span class="tag ${p.c<0?'alert':'pos'}">${p.c>=0?'+':''}${p.c}</span>
+    </li>`).join('');
+  return `<div><p class="rank-list-title">${title}</p><ul class="rank-list">${items}</ul></div>`;
+}
+document.getElementById('corrLists').innerHTML =
+  pairListHTML('最常一起漲跌', topPairs) +
+  pairListHTML('最常反向變動', bottomPairs);
+
+// ---- data table: tabbed by exam, one exam's subjects at a time ----
+const dataTabs = document.getElementById('dataTabs');
+const dataTbody = document.querySelector('#dataTable tbody');
+function renderDataTable(exam){
+  const rows = subjects
+    .map(s=>{ const r = data[s].find(x=>x.exam===exam); return r? {s, score:r.score, avg:r.avg} : null; })
+    .filter(r=>r!==null);
+  let rowsHtml = '';
+  rows.forEach(r=>{
+    const diff = round1(r.score-r.avg);
+    const tagClass = diff<0? 'alert' : (diff>=5?'pos':'amber');
+    rowsHtml += `<tr><td>${r.s}</td><td class="num">${r.score}</td><td class="num">${r.avg}</td><td class="num"><span class="tag ${tagClass}">${diff>=0?'+':''}${diff}</span></td></tr>`;
+  });
+  dataTbody.innerHTML = rowsHtml;
+}
+allExams.forEach(exam=>{
+  const btn = document.createElement('button');
+  btn.className = 'subj-btn';
+  btn.textContent = exam;
+  btn.dataset.exam = exam;
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#dataTabs .subj-btn').forEach(b=>b.classList.toggle('active', b.dataset.exam===exam));
+    renderDataTable(exam);
+  });
+  dataTabs.appendChild(btn);
+});
+document.querySelector('#dataTabs .subj-btn').classList.add('active');
+renderDataTable(allExams[0]);
+
+// ---- page navigation: show one section at a time, charts already sized correctly above ----
+const pageDefs = [
+  {id:'page-data', label:'完整數據表'},
+  {id:'page-overview', label:'各科與年平均差距'},
+  {id:'page-radar', label:'十科強弱分布'},
+  {id:'page-trend', label:'成績曲線'},
+  {id:'page-socsci', label:'社會 vs 自然'},
+  {id:'page-difficulty', label:'段考難易度'},
+  {id:'page-records', label:'單次戰績'},
+  {id:'page-corr', label:'科目連動性'}
+];
+const pageNav = document.getElementById('pageNav');
+function showPage(pageId){
+  pageDefs.forEach(p=>{
+    const el = document.getElementById(p.id);
+    if(el) el.style.display = (p.id===pageId) ? '' : 'none';
+  });
+  document.querySelectorAll('#pageNav .page-tab').forEach(b=>{
+    const isActive = b.dataset.page===pageId;
+    b.classList.toggle('active', isActive);
+    if(isActive) b.scrollIntoView({block:'nearest', inline:'center'});
+  });
+  window.scrollTo({top:0, behavior:'auto'});
+}
+pageDefs.forEach(p=>{
+  const btn = document.createElement('button');
+  btn.className = 'page-tab';
+  btn.textContent = p.label;
+  btn.dataset.page = p.id;
+  btn.addEventListener('click', ()=>showPage(p.id));
+  pageNav.appendChild(btn);
+});
+showPage('page-data');
+</script>
+</body>
+</html>
