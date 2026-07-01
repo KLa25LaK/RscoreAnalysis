@@ -98,11 +98,15 @@
 
   <section class="section card page" id="page-data">
     <h3><span class="dot"></span>完整數據表</h3>
+    <p class="insight" style="margin-top:0;">年平均已改用學校官方成績單上的<b>全年級</b>分數分布重新核對；「年級排名」是根據全年級實際分數分布換算出的百分位，比單看差距分數更準確。</p>
     <div class="row" id="dataTabs" style="gap:8px; margin-bottom:10px;"></div>
-    <table id="dataTable">
-      <thead><tr><th>科目</th><th class="num">分數</th><th class="num">年平均</th><th class="num">差距</th></tr></thead>
-      <tbody></tbody>
-    </table>
+    <div class="grid kpi-grid" id="examRankSummary" style="margin-bottom:16px;"></div>
+    <div style="overflow-x:auto;">
+      <table id="dataTable">
+        <thead><tr><th>科目</th><th class="num">分數</th><th class="num">年平均</th><th class="num">差距</th><th class="num">年級排名</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </section>
 
   <section class="section card page" id="page-overview">
@@ -161,12 +165,12 @@
     <div class="grid" style="grid-template-columns:1fr 1fr; gap:16px;" id="corrLists"></div>
   </section>
 
-  <footer>資料來源：森成績.xlsx　·　本頁可離線儲存後雙擊開啟（需連網載入圖表套件與字體）</footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const data = {"國文":[{"exam":"上學期一段","score":74,"avg":66.3},{"exam":"上學期二段","score":71,"avg":63.9},{"exam":"上學期三段","score":75,"avg":69.8},{"exam":"下學期一段","score":67,"avg":61.0},{"exam":"下學期二段","score":67,"avg":65.5},{"exam":"下學期三段","score":81,"avg":65.0}],"英文":[{"exam":"上學期一段","score":74,"avg":60.6},{"exam":"上學期二段","score":70,"avg":53.7},{"exam":"上學期三段","score":69,"avg":65.7},{"exam":"下學期一段","score":81,"avg":64.5},{"exam":"下學期二段","score":81,"avg":70.9},{"exam":"下學期三段","score":59,"avg":46.1}],"數學":[{"exam":"上學期一段","score":84,"avg":47.8},{"exam":"上學期二段","score":65,"avg":50.3},{"exam":"上學期三段","score":92,"avg":61.8},{"exam":"下學期一段","score":90,"avg":64.9},{"exam":"下學期二段","score":69,"avg":47.1},{"exam":"下學期三段","score":70,"avg":57.2}],"歷史":[{"exam":"上學期一段","score":80,"avg":77.7},{"exam":"上學期二段","score":72,"avg":69.2},{"exam":"上學期三段","score":74,"avg":72.8},{"exam":"下學期一段","score":78,"avg":71.5},{"exam":"下學期二段","score":82,"avg":71.0},{"exam":"下學期三段","score":74,"avg":71.7}],"地理":[{"exam":"上學期一段","score":92,"avg":73.1},{"exam":"上學期二段","score":88,"avg":74.1},{"exam":"上學期三段","score":76,"avg":69.2},{"exam":"下學期一段","score":81,"avg":76.4},{"exam":"下學期二段","score":74,"avg":71.4},{"exam":"下學期三段","score":76,"avg":76.9}],"公民":[{"exam":"下學期一段","score":86,"avg":70.8},{"exam":"下學期二段","score":71,"avg":60.0},{"exam":"下學期三段","score":81,"avg":72.0}],"化學":[{"exam":"上學期一段","score":92,"avg":76.7},{"exam":"上學期二段","score":72,"avg":61.0},{"exam":"上學期三段","score":67,"avg":61.4}],"生物":[{"exam":"上學期二段","score":75,"avg":59.7},{"exam":"上學期三段","score":83,"avg":78.2}],"物理":[{"exam":"下學期一段","score":81,"avg":74.4},{"exam":"下學期二段","score":65,"avg":70.0},{"exam":"下學期三段","score":88,"avg":66.2}],"地科":[{"exam":"下學期一段","score":76,"avg":67.9},{"exam":"下學期二段","score":57,"avg":58.2},{"exam":"下學期三段","score":68,"avg":63.8}]};
+const data = {"國文":[{"exam":"上學期一段","score":74,"avg":66.33},{"exam":"上學期二段","score":71,"avg":63.94},{"exam":"上學期三段","score":75,"avg":69.78},{"exam":"下學期一段","score":67,"avg":60.98},{"exam":"下學期二段","score":67,"avg":65.52},{"exam":"下學期三段","score":81,"avg":65.01}],"英文":[{"exam":"上學期一段","score":74,"avg":60.56},{"exam":"上學期二段","score":70,"avg":53.68},{"exam":"上學期三段","score":69,"avg":65.69},{"exam":"下學期一段","score":81,"avg":64.53},{"exam":"下學期二段","score":81,"avg":70.94},{"exam":"下學期三段","score":59,"avg":46.11}],"數學":[{"exam":"上學期一段","score":84,"avg":49.79},{"exam":"上學期二段","score":65,"avg":50.27},{"exam":"上學期三段","score":92,"avg":61.78},{"exam":"下學期一段","score":90,"avg":64.9},{"exam":"下學期二段","score":69,"avg":47.08},{"exam":"下學期三段","score":70,"avg":57.21}],"歷史":[{"exam":"上學期一段","score":80,"avg":77.66},{"exam":"上學期二段","score":72,"avg":69.16},{"exam":"上學期三段","score":74,"avg":72.82},{"exam":"下學期一段","score":78,"avg":71.52},{"exam":"下學期二段","score":82,"avg":70.95},{"exam":"下學期三段","score":74,"avg":71.68}],"地理":[{"exam":"上學期一段","score":92,"avg":73.13},{"exam":"上學期二段","score":88,"avg":74.09},{"exam":"上學期三段","score":76,"avg":69.17},{"exam":"下學期一段","score":81,"avg":76.42},{"exam":"下學期二段","score":74,"avg":71.39},{"exam":"下學期三段","score":76,"avg":76.89}],"公民":[{"exam":"下學期一段","score":86,"avg":70.84},{"exam":"下學期二段","score":71,"avg":64.04},{"exam":"下學期三段","score":81,"avg":71.99}],"化學":[{"exam":"上學期一段","score":92,"avg":76.7},{"exam":"上學期二段","score":72,"avg":60.99},{"exam":"上學期三段","score":67,"avg":61.43}],"生物":[{"exam":"上學期二段","score":75,"avg":59.67},{"exam":"上學期三段","score":83,"avg":78.23}],"物理":[{"exam":"下學期一段","score":81,"avg":74.36},{"exam":"下學期二段","score":65,"avg":69.99},{"exam":"下學期三段","score":88,"avg":66.23}],"地科":[{"exam":"下學期一段","score":76,"avg":67.92},{"exam":"下學期二段","score":57,"avg":58.21},{"exam":"下學期三段","score":68,"avg":63.77}]};
+const distributions = {"上學期一段":{"國文":[0,1,35,245,327,82,27,10,2,0,1,730],"英文":[0,21,94,117,160,143,100,71,15,9,1,731],"數學":[0,6,26,58,107,174,160,128,49,19,4,731],"歷史":[0,59,317,239,89,19,4,3,0,1,0,731],"地理":[1,44,196,251,145,65,17,8,3,1,0,731],"化學":[1,53,122,104,46,23,8,3,3,2,0,365],"地科":[0,1,30,103,122,75,26,5,2,1,1,366]},"上學期二段":{"國文":[0,0,22,179,314,175,33,2,0,3,0,728],"英文":[0,6,37,96,147,171,116,74,58,21,3,729],"數學":[0,1,22,68,152,160,136,97,53,27,13,729],"歷史":[0,2,77,331,242,60,10,4,2,0,0,728],"地理":[1,73,194,222,141,65,22,7,3,1,0,729],"化學":[0,4,38,69,96,82,43,19,10,3,0,364],"生物":[0,0,13,75,114,80,58,19,5,0,0,364]},"上學期三段":{"國文":[0,19,121,261,211,81,27,5,2,0,2,729],"英文":[0,29,129,183,162,104,63,37,17,5,1,730],"數學":[4,13,91,157,186,118,84,41,12,17,8,731],"歷史":[0,10,158,347,175,30,6,3,1,0,1,731],"地理":[0,28,155,209,184,102,40,10,1,0,1,730],"化學":[0,1,21,84,116,79,43,12,6,2,0,364],"生物":[0,62,134,94,46,16,7,4,0,0,1,364]},"下學期一段":{"國文":[0,0,10,141,291,195,65,18,3,3,1,727],"英文":[0,36,136,157,154,94,68,46,24,9,2,726],"數學":[4,41,101,166,165,124,76,29,14,6,1,727],"歷史":[0,1,131,363,183,37,7,4,1,0,0,727],"地理":[1,101,237,206,109,46,14,9,3,1,0,727],"公民":[0,9,68,137,93,40,12,3,0,1,0,363],"物理":[4,35,114,100,57,31,13,3,4,2,0,363],"地科":[0,7,55,116,97,59,19,8,1,1,0,363]},"下學期二段":{"國文":[0,1,56,200,304,125,27,6,6,2,1,728],"英文":[2,69,178,201,132,62,41,23,14,4,1,727],"數學":[0,2,13,43,112,164,161,131,63,23,16,728],"歷史":[0,21,184,229,196,63,24,7,3,0,1,728],"地理":[0,6,147,311,193,50,9,8,2,1,1,728],"公民":[0,0,37,87,126,71,34,7,1,0,1,364],"物理":[0,18,85,113,77,35,17,9,6,3,1,364],"地科":[0,2,18,60,90,112,52,19,9,1,1,364]},"下學期三段":{"國文":[0,0,46,203,277,159,28,6,6,1,1,727],"英文":[0,1,8,20,98,164,202,141,68,22,2,726],"數學":[0,2,38,142,172,184,91,43,29,15,12,728],"歷史":[0,13,188,284,153,65,17,5,2,0,0,727],"地理":[0,74,249,268,99,27,5,2,1,1,0,726],"公民":[0,16,90,122,88,30,10,3,3,1,0,363],"物理":[0,13,59,90,94,54,31,14,6,2,0,363],"地科":[0,2,41,79,126,63,37,6,8,1,1,364]}};
 
 const allExams = ["上學期一段","上學期二段","上學期三段","下學期一段","下學期二段","下學期三段"];
 const subjects = Object.keys(data);
@@ -174,6 +178,26 @@ const subjects = Object.keys(data);
 function mean(a){return a.reduce((x,y)=>x+y,0)/a.length;}
 function pstdev(a){const m=mean(a); return Math.sqrt(mean(a.map(x=>(x-m)**2)));}
 function round1(n){return Math.round(n*10)/10;}
+function beatPct(score, examLabel, subj){
+  const counts_total = distributions[examLabel] && distributions[examLabel][subj];
+  if(!counts_total) return null;
+  const counts = counts_total.slice(0,-1);
+  const total = counts_total[counts_total.length-1];
+  const binLo = [100,90,80,70,60,50,40,30,20,10,0];
+  let above = 0;
+  for(let i=0;i<counts.length;i++){
+    const lo = binLo[i];
+    const hi = i===0 ? 100 : lo+9;
+    if(score < lo){ above += counts[i]; }
+    else if(score >= lo && score <= hi){
+      const span = hi-lo+1;
+      const fracAbove = (hi-score)/span;
+      above += counts[i]*fracAbove;
+      break;
+    } else { break; }
+  }
+  return round1(100 - (above/total*100));
+}
 function residStd(scores){
   const n = scores.length;
   if(n < 3) return null;
@@ -503,9 +527,19 @@ document.getElementById('corrLists').innerHTML =
   pairListHTML('最常一起漲跌', topPairs) +
   pairListHTML('最常反向變動', bottomPairs);
 
+// ---- 班級 / 類組 真實名次（學校成績系統） ----
+const examRank = {
+  "上學期一段": {total:1460, avg:81.1, classRank:4, classSize:36, groupRank:10, groupSize:365},
+  "上學期二段": {total:1438, avg:71.9, classRank:8, classSize:36, groupRank:37, groupSize:363},
+  "上學期三段": {total:1544, avg:77.2, classRank:10, classSize:36, groupRank:56, groupSize:363},
+  "下學期一段": {total:1756, avg:79.8, classRank:5, classSize:36, groupRank:27, groupSize:363},
+  "下學期二段": {total:1566, avg:71.2, classRank:10, classSize:36, groupRank:77, groupSize:364}
+};
+
 // ---- data table: tabbed by exam, one exam's subjects at a time ----
 const dataTabs = document.getElementById('dataTabs');
 const dataTbody = document.querySelector('#dataTable tbody');
+const examRankSummary = document.getElementById('examRankSummary');
 function renderDataTable(exam){
   const rows = subjects
     .map(s=>{ const r = data[s].find(x=>x.exam===exam); return r? {s, score:r.score, avg:r.avg} : null; })
@@ -514,9 +548,25 @@ function renderDataTable(exam){
   rows.forEach(r=>{
     const diff = round1(r.score-r.avg);
     const tagClass = diff<0? 'alert' : (diff>=5?'pos':'amber');
-    rowsHtml += `<tr><td>${r.s}</td><td class="num">${r.score}</td><td class="num">${r.avg}</td><td class="num"><span class="tag ${tagClass}">${diff>=0?'+':''}${diff}</span></td></tr>`;
+    const bp = beatPct(r.score, exam, r.s);
+    const bpHtml = bp===null ? '<span style="color:var(--ink-muted);">—</span>' : `<span class="tag ${bp>=90?'pos':(bp>=50?'amber':'alert')}">前 ${round1(100-bp)}%</span>`;
+    rowsHtml += `<tr><td>${r.s}</td><td class="num">${r.score}</td><td class="num">${r.avg}</td><td class="num"><span class="tag ${tagClass}">${diff>=0?'+':''}${diff}</span></td><td class="num">${bpHtml}</td></tr>`;
   });
   dataTbody.innerHTML = rowsHtml;
+
+  const rk = examRank[exam];
+  if(!rk){
+    examRankSummary.innerHTML = `<div class="kpi"><div class="label">這次段考的真實名次</div><div class="value" style="font-size:15px; color:var(--ink-muted);">尚無資料</div></div>`;
+  } else {
+    const groupPct = round1(rk.groupRank/rk.groupSize*100);
+    examRankSummary.innerHTML = `
+      <div class="kpi"><div class="label">總分</div><div class="value">${rk.total}</div></div>
+      <div class="kpi"><div class="label">平均</div><div class="value">${rk.avg}</div></div>
+      <div class="kpi teal"><div class="label">班級名次</div><div class="value">${rk.classRank} / ${rk.classSize}</div></div>
+      <div class="kpi amber"><div class="label">類組名次</div><div class="value">${rk.groupRank} / ${rk.groupSize}</div></div>
+      <div class="kpi amber"><div class="label">類組百分比</div><div class="value">前 ${groupPct}%</div></div>
+    `;
+  }
 }
 allExams.forEach(exam=>{
   const btn = document.createElement('button');
